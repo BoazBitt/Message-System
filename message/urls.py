@@ -9,6 +9,7 @@ router.register('delete', views.DeleteView, basename='delete')
 router.register('unread', views.UnreadMessagesView, basename='Unread_messages')
 router.register('send', views.SendMessagesView, basename='send_message')
 router.register('', views.AllMessagesView, basename='all_messages')
+
 urlpatterns = [
 
     path('', include(router.urls))
