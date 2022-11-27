@@ -4,7 +4,7 @@
 Rest - API for handling messages between users.
 ## Table of Content
 * [Installation](#Installation)
-* [What the system does](#whatthesystemdoes)
+* [Functionality](#functionality)
 * [Additions](#Additions)
 * [Links](#Links)
 
@@ -20,7 +20,7 @@ pip install python-dotenv
 
 ```
 
-## What the system does
+## Functionality
 
 Writing a message
 
