@@ -21,7 +21,7 @@ pip install python-dotenv
 
 ## What the system does
 
-Write message
+Writing a message
 
 Get all messages for a specific user
 
