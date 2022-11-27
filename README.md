@@ -4,7 +4,7 @@
 Rest - API for handling messages between users.
 ## Table of Content
 * [Installation](#Installation)
-* [What the system does](#what)
+* [What the system does](#what the system does)
 * [Additions](#Additions)
 * [Links](#Links)
 
