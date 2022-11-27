@@ -4,11 +4,9 @@
 Rest - API for handling messages between users.
 ## Table of Content
 * [Installation](#Installation)
-* [Tools and Technologies Used](#Tools%20and%20Technologies%20Used)
-* [Usage](#usage)
-* [Installation](#installation)
-* [Contribution](#contribution)
-* [License](#license)
+* [What the system does?](#What the system does?)
+* [Additions](#Additions)
+* [Links](#Links)
 
 ## Installation
 
