@@ -41,8 +41,6 @@ Documentation
 
 
 
-https://github.com/BoazBitt/Message-System/blob/master/Message%20System.postman_collection.json
-
 ## Links
 [Deploy](https://boaz2119.pythonanywhere.com/)
 
