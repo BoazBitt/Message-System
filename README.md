@@ -10,7 +10,7 @@ Rest - API for handling messages between users.
 
 ## Installation
 
-Use the package manager [Installtion](https://github.com/BoazBitt/Message-System/blob/master/Installations.txt) to install foobar.
+Use the package manager [Installtion](https://github.com/BoazBitt/Message-System/blob/master/requirements.txt) to install foobar.
 
 ```bash
 pip install pipenv
@@ -41,7 +41,8 @@ Documentation
 
 
 
-
+https://github.com/BoazBitt/Message-System/blob/master/Message%20System.postman_collection.json
 
 ## Links
 [Deploy](https://boaz2119.pythonanywhere.com/)
+[Postman](https://github.com/BoazBitt/Message-System/blob/master/Message%20System.postman_collection.json)
