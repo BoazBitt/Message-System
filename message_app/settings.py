@@ -35,10 +35,10 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = str(os.getenv('SECRET_KEY')) # Instead of your actual secret key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'Boaz2119.pythonanywhere.com']
-#
+ALLOWED_HOSTS = []
+#'localhost', 'Boaz2119.pythonanywhere.com'
 
 
 # Application definition
@@ -53,7 +53,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'message',
+    'django_extensions',
 ]
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -144,7 +147,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
+# STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
