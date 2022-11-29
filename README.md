@@ -12,13 +12,7 @@ Rest - API for handling messages between users.
 
 Use the package manager [Installtion](https://github.com/BoazBitt/Message-System/blob/master/requirements.txt) to install foobar.
 
-```bash
-pip install pipenv
-pip install django
-pip install djangorestframework
-pip install python-dotenv
 
-```
 
 ## Functionality
 
