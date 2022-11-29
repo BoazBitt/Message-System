@@ -35,7 +35,7 @@ SECRET_KEY = str(os.getenv('SECRET_KEY'))  # Instead of your actual secret key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost',  'Boaz2119.pythonanywhere.com', 'Boaz2118.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost',  'Boaz2119.pythonanywhere.com']
 #
 
 
