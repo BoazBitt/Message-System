@@ -1,15 +1,15 @@
-from rest_framework import status
+from django.template.defaulttags import url
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.http import HttpResponse
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
+from rest_framework_swagger.views import get_swagger_view
 
 from .serializers import RegisterSerializer
 
 
 class RegisterView(APIView):
-    permission_classes = [AllowAny]
+
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -24,3 +24,5 @@ class RegisterView(APIView):
         else:
             data = serializer.errors
         return Response(data)
+
+

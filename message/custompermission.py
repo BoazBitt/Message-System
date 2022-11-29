@@ -12,6 +12,7 @@ class ReadPermission(BasePermission):
             if user == msg.receiver and not msg.receiver_delete:
                 msg.read = True
                 msg.save()
+                print("SHANGED TO TRUE!!!!!",msg.read)
                 return True
             elif user == msg.sender and not msg.sender_delete:
                 return True

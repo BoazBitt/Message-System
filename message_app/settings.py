@@ -18,12 +18,10 @@ from dotenv import load_dotenv, find_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-
 
 
 # Add .env variables anywhere before SECRET_KEY
@@ -32,13 +30,13 @@ if os.path.isfile(dotenv_file):
     load_dotenv(dotenv_file)
 
 # UPDATE secret key
-SECRET_KEY = str(os.getenv('SECRET_KEY')) # Instead of your actual secret key
+SECRET_KEY = str(os.getenv('SECRET_KEY'))  # Instead of your actual secret key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
-#'localhost', 'Boaz2119.pythonanywhere.com'
+# 'localhost', 'Boaz2119.pythonanywhere.com'
 
 
 # Application definition
@@ -54,11 +52,12 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'message',
     'django_extensions',
+    'rest_framework_swagger',
+    'drf_yasg'
 ]
 
-
-
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
@@ -80,6 +79,9 @@ MIDDLEWARE = [
 
 APPEND_SLASH = False
 
+SWAGGER_SETTINGS = {
+   'USE_SESSION_AUTH': False
+}
 ROOT_URLCONF = 'message_app.urls'
 
 TEMPLATES = [
@@ -100,7 +102,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'message_app.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -110,7 +111,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -130,7 +130,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -141,7 +140,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
