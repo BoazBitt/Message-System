@@ -1,66 +1,61 @@
 import datetime
 from django.db.models import Q
-from rest_framework import viewsets, permissions
-from rest_framework.authtoken.admin import User
+from rest_framework import viewsets, permissions, status
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from .models import Message
 from .serializer import MessageSerializer, SendMessageSerializer, FullMessageSerializer
-from .custompermission import ReadPermission,DeletePermission
 
 
-class ReadView(viewsets.ModelViewSet):
-    serializer_class = FullMessageSerializer
-    permission_classes = [ReadPermission]
+class ManageMassagesView(viewsets.ModelViewSet):
     queryset = Message.objects.all()
-    http_method_names = ['get']
-
-
-class DeleteView(viewsets.ModelViewSet):
-    serializer_class = FullMessageSerializer
-    permission_classes = [DeletePermission]
-    queryset = Message.objects.all()
-    http_method_names = ['get']
-
-    def permission_denied(self, request, message=None, code=None):
-        raise PermissionDenied(message)
-
-
-class AllMessagesView(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get']
+    permission_classes = (IsAuthenticated,)
 
-    def get_queryset(self):
-        user = self.request.user
-        queryset = Message.objects.filter(Q(receiver=user,receiver_delete=False) | Q(sender=user,sender_delete=False))
-        return queryset
+    def create(self, request, *args, **kwargs):
+        data = {'sender': request.user.id}
+        data = {**data, **request.data}
+        serializer = SendMessageSerializer(data=data)
+        print(serializer.is_valid())
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-
-class UnreadMessagesView(viewsets.ModelViewSet):
-    serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get']
-
-    def get_queryset(self):
-        user = self.request.user
-        queryset = Message.objects.filter(receiver=user, read=False,receiver_delete=False)
-        return queryset
-
-
-class SendMessagesView(viewsets.ModelViewSet):
-    serializer_class = SendMessageSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['post']
-
-    def create(self, data):
-        msg = Message.objects.create(
-            sender=self.request.user,
-            receiver=User.objects.get(id=data.data['receiver']),
-            subject=data.data['subject'],
-            msg=data.data['msg'],
-            creation_date=datetime.date.today()
-        )
-        msg.save()
-        serializer = MessageSerializer(msg)
+    def list(self, request, *args, **kwargs):
+        usr = request.user.id
+        path = request.get_full_path()
+        if path == '/':
+            queryset = Message.objects.filter(
+                Q(receiver=usr, receiver_delete=False) | Q(sender=usr, sender_delete=False))
+        elif path == '/unread/':
+            queryset = Message.objects.filter(receiver=usr, read=False, receiver_delete=False)
+        else:
+            queryset = None
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.read = True
+        instance.save()
+        serializer = FullMessageSerializer(instance)
+        return Response(serializer.data)
+
+    def perform_destroy(self, instance):
+        usr = self.request.user.id
+        if instance.sender_delete and instance.receiver_delete:
+            instance.delete()
+        elif instance.sender.id == usr:
+            instance.sender_delete = True
+            instance.save()
+        elif instance.receiver.id == usr:
+            instance.receiver_delete = True
+            instance.save()
+

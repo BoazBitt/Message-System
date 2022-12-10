@@ -19,6 +19,8 @@ class Message(models.Model):
     def __str__(self):
         return self.subject + ' ' + str(self.creation_date)
 
+# class MessageManager(models.Model):
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=False, created=False, **kwargs):

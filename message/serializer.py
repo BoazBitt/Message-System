@@ -18,6 +18,7 @@ class SendMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = [
+            'sender',
             'receiver',
             'subject',
             'msg',
