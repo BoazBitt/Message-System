@@ -1,12 +1,14 @@
 import datetime
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from rest_framework import viewsets, permissions, status
+from functools import reduce
 
+from rest_framework.authtoken.admin import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
-from .models import Message
+from .models import Message, MessageManager
 from .serializer import MessageSerializer, SendMessageSerializer, FullMessageSerializer
 
 
@@ -18,8 +20,18 @@ class ManageMassagesView(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         data = {'sender': request.user.id}
         data = {**data, **request.data}
+        read = request.data['receiver']
+        users = User.objects.all()
+        manager = MessageManager.objects.create()
+        for user in users:
+            if user.id == request.user.id:
+                manager.receivers_delete.add(user)
+            if user.id in read:
+                manager.receivers_delete.add(user)
+                manager.readMessages.add(user)
+        data['manager'] = manager.id
         serializer = SendMessageSerializer(data=data)
-        print(serializer.is_valid())
+        serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -28,10 +40,17 @@ class ManageMassagesView(viewsets.ModelViewSet):
         usr = request.user.id
         path = request.get_full_path()
         if path == '/':
-            queryset = Message.objects.filter(
-                Q(receiver=usr, receiver_delete=False) | Q(sender=usr, sender_delete=False))
+            queryset_send = Message.objects.filter(sender=usr, manager__receivers_delete__id=usr)
+            queryset_recived = Message.objects.filter(receiver__id=usr, manager__receivers_delete__id=usr)
+            queryset = queryset_send.union(queryset_recived)
+            print(queryset_send)
+            print()
+            # queryset = Message.objects.filter(
+            #     Q(receiver=usr, receiver_delete=False) | Q(sender=usr, sender_delete=False))
         elif path == '/unread/':
-            queryset = Message.objects.filter(receiver=usr, read=False, receiver_delete=False)
+            queryset = Message.objects.filter(receiver__id=usr, manager__readMessages__id=usr,
+                                              manager__receivers_delete__id=usr)
+            # queryset = Message.objects.filter(receiver=usr, read=False, receiver_delete=False)
         else:
             queryset = None
         page = self.paginate_queryset(queryset)
@@ -42,20 +61,21 @@ class ManageMassagesView(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
+        print("in retrive!!!")
         instance = self.get_object()
-        instance.read = True
-        instance.save()
+        # instance.read = True
+        print(instance.manager.readMessages.all())
+        instance.manager.readMessages.remove(request.user)
+        print(instance.manager.readMessages.all())
+        print("after retrive!!!")
         serializer = FullMessageSerializer(instance)
         return Response(serializer.data)
 
     def perform_destroy(self, instance):
-        usr = self.request.user.id
-        if instance.sender_delete and instance.receiver_delete:
+        usr = self.request.user
+        if usr in instance.manager.receivers_delete.all():
+            instance.manager.receivers_delete.remove(usr)
+            instance.manager.save()
+        if len(instance.manager.receivers_delete.all()) == 0:
+            instance.manager.delete()
             instance.delete()
-        elif instance.sender.id == usr:
-            instance.sender_delete = True
-            instance.save()
-        elif instance.receiver.id == usr:
-            instance.receiver_delete = True
-            instance.save()
-

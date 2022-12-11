@@ -23,6 +23,7 @@ class SendMessageSerializer(serializers.ModelSerializer):
             'subject',
             'msg',
             'creation_date',
+            'manager',
         ]
 
 
