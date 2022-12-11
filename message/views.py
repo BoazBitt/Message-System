@@ -43,8 +43,6 @@ class ManageMassagesView(viewsets.ModelViewSet):
             queryset_send = Message.objects.filter(sender=usr, manager__receivers_delete__id=usr)
             queryset_recived = Message.objects.filter(receiver__id=usr, manager__receivers_delete__id=usr)
             queryset = queryset_send.union(queryset_recived)
-            print(queryset_send)
-            print()
             # queryset = Message.objects.filter(
             #     Q(receiver=usr, receiver_delete=False) | Q(sender=usr, sender_delete=False))
         elif path == '/unread/':
@@ -61,13 +59,9 @@ class ManageMassagesView(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
-        print("in retrive!!!")
         instance = self.get_object()
         # instance.read = True
-        print(instance.manager.readMessages.all())
         instance.manager.readMessages.remove(request.user)
-        print(instance.manager.readMessages.all())
-        print("after retrive!!!")
         serializer = FullMessageSerializer(instance)
         return Response(serializer.data)
 
