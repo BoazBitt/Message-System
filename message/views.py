@@ -25,17 +25,9 @@ class ManageMassagesView(viewsets.ModelViewSet):
         manager.receivers_delete.add(data['sender'])
         for userid in read:
             user = User.objects.get(id=userid)
-            if  user:
+            if user:
                 manager.receivers_delete.add(user)
                 manager.readMessages.add(user)
-
-        users = User.objects.all()
-        # for user in users:
-        #     if user.id == request.user.id:
-        #         manager.receivers_delete.add(user)
-        #     if user.id in read:
-        #         manager.receivers_delete.add(user)
-        #         manager.readMessages.add(user)
         data['manager'] = manager.id
         serializer = SendMessageSerializer(data=data)
         serializer.is_valid(raise_exception=True)
@@ -50,12 +42,9 @@ class ManageMassagesView(viewsets.ModelViewSet):
             queryset_send = Message.objects.filter(sender=usr, manager__receivers_delete__id=usr)
             queryset_recived = Message.objects.filter(receiver__id=usr, manager__receivers_delete__id=usr)
             queryset = queryset_send.union(queryset_recived)
-            # queryset = Message.objects.filter(
-            #     Q(receiver=usr, receiver_delete=False) | Q(sender=usr, sender_delete=False))
         elif path == '/unread/':
             queryset = Message.objects.filter(receiver__id=usr, manager__readMessages__id=usr,
                                               manager__receivers_delete__id=usr)
-            # queryset = Message.objects.filter(receiver=usr, read=False, receiver_delete=False)
         else:
             queryset = None
         page = self.paginate_queryset(queryset)
@@ -67,7 +56,6 @@ class ManageMassagesView(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        # instance.read = True
         instance.manager.readMessages.remove(request.user)
         serializer = FullMessageSerializer(instance)
         return Response(serializer.data)
