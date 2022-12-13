@@ -21,14 +21,21 @@ class ManageMassagesView(viewsets.ModelViewSet):
         data = {'sender': request.user.id}
         data = {**data, **request.data}
         read = request.data['receiver']
-        users = User.objects.all()
         manager = MessageManager.objects.create()
-        for user in users:
-            if user.id == request.user.id:
-                manager.receivers_delete.add(user)
-            if user.id in read:
+        manager.receivers_delete.add(data['sender'])
+        for userid in read:
+            user = User.objects.get(id=userid)
+            if  user:
                 manager.receivers_delete.add(user)
                 manager.readMessages.add(user)
+
+        users = User.objects.all()
+        # for user in users:
+        #     if user.id == request.user.id:
+        #         manager.receivers_delete.add(user)
+        #     if user.id in read:
+        #         manager.receivers_delete.add(user)
+        #         manager.readMessages.add(user)
         data['manager'] = manager.id
         serializer = SendMessageSerializer(data=data)
         serializer.is_valid(raise_exception=True)
